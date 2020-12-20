@@ -1,13 +1,20 @@
 import React, { Component } from 'react'
-import { Text, View, ImageBackground, FlatList, Image } from 'react-native'
+import { Text, View, ImageBackground, FlatList, Image,TouchableOpacity } from 'react-native'
 import { GetEmployeeList } from '../actions/DashboardListActions'
 import { connect } from 'react-redux';
+import { DrawerActions } from 'react-navigation-drawer';
 export class Dashboard extends Component {
     static navigationOptions = ({ navigation }) => {
         const { params } = navigation.state;
 
         return {
-            headerTitle: "Dashboard"
+            headerTitle:  (
+                <View
+                    style={styles.center_layout}
+                 >
+                    <Text style={styles.center_text}>SWAPI</Text>
+        </View>
+            )
             ,
 
             headerStyle: {
@@ -23,7 +30,29 @@ export class Dashboard extends Component {
                 fontSize: 18,
             },
             headerTintColor: '#fff',
-            headerRight: (<View></View>)
+            headerLeft: (
+                <TouchableOpacity
+                    onPress={() => navigation.dispatch(DrawerActions.toggleDrawer())}>
+                    <View
+                        style={{
+                            marginRight: 13,
+                            paddingTop: 10,
+                            paddingRight: 10,
+                            paddingLeft: 15,
+                            paddingBottom: 10,
+                        }}>
+                        {/* <IOSIcon name="md-menu" size={30} color={'#fff'} /> */}
+                        <Image
+                            source={require('../Assets/menu.png')}
+                            style={{
+                                height:  30,
+                                width: 30,
+                            }}
+                        />
+                    </View>
+                </TouchableOpacity>
+            ),
+         
         };
     };
 
@@ -37,8 +66,13 @@ export class Dashboard extends Component {
     renderItem = ({ item, index }) => {
         console.log("item", item)
         return (
-            <View
-
+            <TouchableOpacity
+                onPress={() => {
+                    
+                    this.props.navigation.navigate("PeopleDetails", {
+                        item:item
+                    })
+                }}
                 style={styles.renderItemViewStyle}>
                 {/* View for Showing Bell icon*/}
                 <View style={styles.circleViewStyle}>
@@ -46,7 +80,8 @@ export class Dashboard extends Component {
                         source={require('../Assets/dummyboy.png')}
                         style={{
                             height: 40,
-                            width: 40,
+                            width: 40
+                            
                         }}
                     />
                 </View>
@@ -55,12 +90,9 @@ export class Dashboard extends Component {
                 <View style={styles.renderItemTextViewStyle}>
 
                     <Text style={[styles.textStyle, { fontWeight: 'bold' }]}>Name :-  {item.name}</Text>
-                    <Text style={[styles.textStyle, { fontWeight: '500' }]}>Age :-  {item.age}  Gender :-  {item.gender}</Text>
-                    <Text style={[styles.textStyle, { fontWeight: '500' }]}>Email :-  {item.email}</Text>
-                    <Text style={[styles.textStyle, { fontWeight: '500' }]}>PhoneNo :-  {item.phoneNo}</Text>
                 </View>
 
-            </View>
+            </TouchableOpacity>
         );
     };
 
@@ -78,7 +110,7 @@ export class Dashboard extends Component {
                     data={this.props.EList}
                     renderItem={this.renderItem}
                     bounces={false}
-                    keyExtractor={item => item.id.toString()}
+                    keyExtractor={item => item.name}
                 />
 
             </ImageBackground>
@@ -93,7 +125,7 @@ const styles = {
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: 20,
+        padding: 10,
     },
     overlay: {
         position: 'absolute',
@@ -108,14 +140,17 @@ const styles = {
     },
     renderItemViewStyle: {
         flexDirection: 'row',
-        padding: 15,
+        padding: 10,
         borderBottomColor: 'rgba(9,9,9,.2)',
         borderBottomWidth: 1.5,
-        width: '90%',
+        width: '78%',
         backgroundColor: '#fff',
         justifyContent: 'space-between',
         alignContent: 'center',
         marginBottom: 10,
+        borderRadius: 10,
+        borderWidth: 1,
+        borderColor: '#000'
       
     },
     textStyle: {
@@ -138,6 +173,20 @@ const styles = {
         borderRadius: 30,
 
     },
+    center_layout: {
+        marginTop: 1,
+        backgroundColor: 'black',
+        height: 40,
+        padding:10,
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    center_text: {
+
+        textAlign: 'center',
+        color: 'yellow',
+        fontSize: 15,
+    }
 
 };
 

@@ -1,13 +1,16 @@
 import React, { Component } from 'react'
-import { Text, View, ImageBackground, TextInput, TouchableOpacity } from 'react-native'
+import { Text, View, ImageBackground, TextInput, TouchableOpacity, Alert} from 'react-native'
 import Icons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Toast from 'react-native-simple-toast';
+import auth from "@react-native-firebase/auth"
+import firebase from '@react-native-firebase/auth'
 export class Loginpage extends Component {
 
     state = {
         username: '',
         password: '',
-        btnDisable: false
+        btnDisable: false,
+        authenticated:false
     };
     static navigationOptions = ({ navigation }) => {
         //School Name
@@ -34,8 +37,35 @@ export class Loginpage extends Component {
         };
     };
 
-    componentDidMount() {
+    doSingIn = async (email, password) => {
+        try {
+            let response = await auth().signInWithEmailAndPassword(email, password)
+            if (response && response.user) {
+                Alert.alert("Success ✅", "Authenticated successfully")
+                this.props.navigation.navigate("Dashboard");  
+            }
+        } catch (e) {
+            console.error(e.message)
+        }
+    }
 
+    doCreateUser = async (email, password) => {
+        try {
+            let response = await auth().createUserWithEmailAndPassword(email, password);
+            if (response) {
+                this.props.navigation.navigate("Dashboard");  
+                console.log(tag, "?", response)
+            }
+        } catch (e) {
+            console.error(e.message);
+        }
+    }
+
+
+   
+
+    componentDidMount() {
+     
       this.emptyCheck()
 
     }
@@ -106,15 +136,12 @@ export class Loginpage extends Component {
                         },
                     ]}
                     onPress={() => {
-            
+              
                         if (this.state.btnDisable == false) {
-                            if (this.state.username == 'hruday@gmail.com' && this.state.password == 'hruday123') {
-                                this.setState({username:'',password:''})
-                                this.props.navigation.navigate("Dashboard");  
-                            }
-                            else {
-                                Toast.show('Username & Password is wrong !!!', Toast.LONG);
-                            }
+                            
+                            this.doSingIn(this.state.username,this.state.password)
+                                
+                           
                           
                         }
                         //For Navigating to Home page
@@ -135,6 +162,13 @@ export class Loginpage extends Component {
                         </View>
                     
                 </TouchableOpacity>
+
+                <TouchableOpacity onPress={() => {
+                    this.doCreateUser(this.state.username, this.state.password)
+                }}>
+                    <Text style={style.labelTextStyle}>Sign Up</Text>
+                </TouchableOpacity>
+               
             </ImageBackground>
         )
     }
